@@ -1,7 +1,7 @@
 let sqlite3 = require('sqlite3').verbose();
 
 const setupDB = (dbname) => {
-    let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_CREATE, (err) => {
+    let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
       if(err) {
           console.log(err.message);
           return;
@@ -12,10 +12,23 @@ const setupDB = (dbname) => {
 
   db.serialize( () => {
     
-    db.run("CREATE TABLE [IF NOT EXISTS] notes (note_id INTEGER PRIMARY KEY, note_title TEXT, note_body TEXT)");
+    let sql = `CREATE TABLE IF NOT EXISTS notes (
+                 note_id INTEGER PRIMARY KEY, 
+                 note_title TEXT, 
+                 note_body TEXT) WITHOUT ROWID;`;
+                 
+    db.run(sql, [], (err) => {
+      if (err) {
+        console.log(err.message);
+      }
+    });
     
     // Create and then insert into the language table the text translations for the interface 
-    db.run("CREATE TABLE [IF NOT EXISTS] language (lang_id TEXT, interface TEXT)");
+    db.run("CREATE TABLE IF NOT EXISTS language (lang_id TEXT, interface TEXT) WITHOUT ROWID;", [], (err) => {
+      if (err) {
+        console.log(err.message);
+      }
+    });
     
   });
 
