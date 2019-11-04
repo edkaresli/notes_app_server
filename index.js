@@ -30,11 +30,11 @@ app.get('/notes', (req, res) => {
 });
 
 app.post('/notes', (req, res) => {
-  let id = req.body.note_id;
+  let note_id = Date.now();
   let note_title = req.body.note_id;
   let note_body = req.body.note_body;
 
-  dbObj.insertNote("NotesDB", id, note_title, note_body);
+  dbObj.insertNote("NotesDB", note_id, note_title, note_body);
   let results = dbObj.getAllNotes("NotesDB");
   if(results) {
     res.json(results);
