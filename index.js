@@ -20,6 +20,10 @@ dbObj.setupDB("NotesDB");
 
 // app.use("/notes/", router);
 
+app.get('/', (req, res) => {
+  res.json({message: "Hello there"});
+});
+
 app.get('/notes', (req, res) => {
     // Connect to DB and get all notes, send them back as JSON
   let results = dbObj.getAllNotes("NotesDB");

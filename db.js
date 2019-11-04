@@ -4,7 +4,7 @@ const setupDB = (dbname) => {
     let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_CREATE, (err) => {
       if(err) {
           console.log(err.message);
-          // return err;
+          return;
       }
 
       console.log(`Connected to ./DB/${dbname} database`);
