@@ -13,14 +13,20 @@ app.use(bodyParser.json());
 
 app.use(express.static('public'));
 
-let db = require('./db');
+let dbObj = require('./db');
 
+dbObj.setupDB("NotesDB");
 // const router = require('./router');
 
 // app.use("/notes/", router);
 
 app.get('/notes', (req, res) => {
     // Connect to DB and get all notes, send them back as JSON
+  let results = dbObj.getAllNotes("NotesDB");
+  if(results) {
+    // turn the results to a JSON and send them in response to client
+    res.json(results);
+  }
 });
 
 app.post('/notes', (req, res) => {
