@@ -50,11 +50,21 @@ app.post('/notes', (req, res) => {
 app.put('/notes/:id', (req, res) => {
   // Extract note from req and update DB with it using its ID and body
   // Send back an OK/Fail message
+  const id = req.params.note_id;
+  const note_title = req.params.note_title;
+  const note_body  = req.params.note_body; 
+  dbObj.updateNote("NotesDB", id, note_title, note_body);
+  res.json(dbObj.getAllNotes("NotesDB"));
 });
 
-app.delete('/notes/:id', (req, res) => {
+app.delete('/notes/:note_id', (req, res) => {
   // Find note in DB by id and delete it
   // Send back an OK/Fail message
+  const id = req.params.note_id;
+  dbObj.deleteNote("NotesDB", id);
+  let results = dbObj.getAllNotes("NotesDB");
+  
+  res.json(results);
 });
 
 

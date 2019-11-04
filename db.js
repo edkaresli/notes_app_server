@@ -1,7 +1,7 @@
 let sqlite3 = require('sqlite3').verbose();
 
 const setupDB = (dbname) => {
-    let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READWRITE, (err) => {
+    let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_CREATE, (err) => {
       if(err) {
           console.log(err.message);
           // return err;
@@ -97,14 +97,33 @@ const updateNote = (dbname, id, title, body) => {
   db.close();
 }
 
+const deleteNote = (dbname, noteid) => {
+  let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READWRITE, (err) => {
+    if (err) {
+      console.log(err.message);
+    }
+  });
+  
+  let sql = `DELETE FROM notes where note_id = ${noteid}`;
+  db.run(sql, [], (err) => {
+    if(err) {
+      console.log(err.message);
+    }
+  });
+}
+
 const localize = (lang_id) => {
   // Get the localization JSON object from the language table by the lang_id
 }
 
-module.exports = {
+
+let dbOps = {
   setupDB, 
   getAllNotes,
+  deleteNote,
   find, 
   insertNote, 
   updateNote
 };
+
+module.exports = dbOps;
