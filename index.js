@@ -15,21 +15,32 @@ app.use(express.static('public'));
 
 let dbObj = require('./db');
 
-dbObj.setupDB("NotesDB");
+dbObj.setupDB();
 // const router = require('./router');
 
 // app.use("/notes/", router);
 
 app.get('/', (req, res) => {
+  console.log("Received a GET request");
   res.json({message: "Hello there"});
 });
 
 app.get('/notes', (req, res) => {
+  console.log("Received a GET /notes request");
     // Connect to DB and get all notes, send them back as JSON
-  let results = dbObj.getAllNotes("NotesDB");
+
+  let results = new Promise( (resolve, reject) => {
+    resolve(await dbObj.getAllNotes());
+  });
+  // dbObj.getAllNotes();
+  console.log("results = getAllNotes() from index.js:");
+  console.log(results);
   if(results) {
     // turn the results to a JSON and send them in response to client
     res.json(results);
+  }
+  else {
+    res.json({ message: "Empty dataset"});
   }
 });
 
@@ -38,8 +49,8 @@ app.post('/notes', (req, res) => {
   let note_title = req.body.note_id;
   let note_body = req.body.note_body;
 
-  dbObj.insertNote("NotesDB", note_id, note_title, note_body);
-  let results = dbObj.getAllNotes("NotesDB");
+  dbObj.insertNote(note_id, note_title, note_body);
+  let results = dbObj.getAllNotes();
   if(results) {
     res.json(results);
   }
@@ -57,16 +68,16 @@ app.put('/notes/:id', (req, res) => {
   const id = req.params.note_id;
   const note_title = req.params.note_title;
   const note_body  = req.params.note_body; 
-  dbObj.updateNote("NotesDB", id, note_title, note_body);
-  res.json(dbObj.getAllNotes("NotesDB"));
+  dbObj.updateNote(id, note_title, note_body);
+  res.json(dbObj.getAllNotes());
 });
 
 app.delete('/notes/:note_id', (req, res) => {
   // Find note in DB by id and delete it
   // Send back an OK/Fail message
   const id = req.params.note_id;
-  dbObj.deleteNote("NotesDB", id);
-  let results = dbObj.getAllNotes("NotesDB");
+  dbObj.deleteNote(id);
+  let results = dbObj.getAllNotes();
   
   res.json(results);
 });

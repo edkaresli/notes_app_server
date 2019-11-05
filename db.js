@@ -1,6 +1,7 @@
 let sqlite3 = require('sqlite3').verbose();
 
-const setupDB = (dbname) => {
+const setupDB = () => {
+    const dbname = "Notes.db"
     let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
       if(err) {
           console.log(err.message);
@@ -24,7 +25,7 @@ const setupDB = (dbname) => {
     });
     
     // Create and then insert into the language table the text translations for the interface 
-    db.run("CREATE TABLE IF NOT EXISTS language (lang_id TEXT, interface TEXT) WITHOUT ROWID;", [], (err) => {
+    db.run("CREATE TABLE IF NOT EXISTS language (lang_id TEXT PRIMARY KEY, interface TEXT) WITHOUT ROWID;", [], (err) => {
       if (err) {
         console.log(err.message);
       }
@@ -35,7 +36,8 @@ const setupDB = (dbname) => {
   db.close();
 }
 
-const getAllNotes = (dbname) => {
+let getAllNotes = () => {
+  const dbname = "Notes.db";
   let resultSet;
 
   let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READ, (err) => {
@@ -51,12 +53,21 @@ const getAllNotes = (dbname) => {
       console.log(err.message);
       return null;
     }
-    resultSet = result;
-    return resultSet;
+    console.log("Result from inside getAllNotes():");
+    console.log(result);
+    let dataset = result; 
+    return dataset;
+    // console.log("dataset from inside getAllNotes():");
+    // console.log(dataset);
+   // dataset = resultSet;
+    // console.log("resultSet: ");
+    // console.log(resultSet);
   });
+ 
 }
 
-const find = (dbname, id) => {
+const find = (id) => {
+  const dbname = "Notes.gb"
   let resultSet;
 
   let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READ, (err) => {
@@ -78,7 +89,8 @@ const find = (dbname, id) => {
   return resultSet;
 }
 
-const insertNote = (dbname, id, title, body) => {
+const insertNote = (id, title, body) => {
+  const dbname = "Notes.db";
   let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
       console.log(err.message);
@@ -94,7 +106,8 @@ const insertNote = (dbname, id, title, body) => {
   db.close();
 }
 
-const updateNote = (dbname, id, title, body) => {
+const updateNote = (id, title, body) => {
+  const dbname = "Notes.db";
   let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
       console.log(err.message);
@@ -110,7 +123,8 @@ const updateNote = (dbname, id, title, body) => {
   db.close();
 }
 
-const deleteNote = (dbname, noteid) => {
+const deleteNote = (noteid) => {
+  const dbname = "Notes.db";
   let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
       console.log(err.message);
