@@ -28,36 +28,41 @@ app.get('/', (req, res) => {
 app.get('/notes', (req, res) => {
   console.log("Received a GET /notes request");
     // Connect to DB and get all notes, send them back as JSON
-
-  let results = new Promise( (resolve, reject) => {
-    resolve(await dbObj.getAllNotes());
+  let results = dbObj.getAllNotes();
+  results.then(data => {
+    console.log(data);
+    res.json(data);
+  })
+  .catch(err => {
+    console.log(err);
+    res.send(err);
   });
-  // dbObj.getAllNotes();
-  console.log("results = getAllNotes() from index.js:");
-  console.log(results);
-  if(results) {
-    // turn the results to a JSON and send them in response to client
-    res.json(results);
-  }
-  else {
-    res.json({ message: "Empty dataset"});
-  }
+    
 });
 
 app.post('/notes', (req, res) => {
-  let note_id = Date.now();
-  let note_title = req.body.note_id;
-  let note_body = req.body.note_body;
-
-  dbObj.insertNote(note_id, note_title, note_body);
-  let results = dbObj.getAllNotes();
-  if(results) {
-    res.json(results);
-  }
-  else {
-    res.json({message: "A problem occured"});
-  }
+  console.log("Received a POST /notes request.");
   
+  let note_id = Date.now();
+  let note_title = req.body.note_title;
+  let note_body = req.body.note_body;
+  
+  console.log(`Data: { note_id: ${note_id}, ${note_title}, note_body: ${note_body} }`);
+
+  dbObj.insertNote(note_id, note_title, note_body)
+  .then(() => {
+    let results = dbObj.getAllNotes();
+    results.then(data => {
+    res.json(data);
+  })
+    .catch(err => {
+      res.send(err);
+    });
+  })
+    .catch(err => {
+      res.send(err);
+    });
+    
   // Extract note from req and insert it as a row into DB
   // Send back and OK/Fail message
 });
@@ -65,21 +70,38 @@ app.post('/notes', (req, res) => {
 app.put('/notes/:id', (req, res) => {
   // Extract note from req and update DB with it using its ID and body
   // Send back an OK/Fail message
-  const id = req.params.note_id;
+  const note_id = req.params.note_id;
   const note_title = req.params.note_title;
   const note_body  = req.params.note_body; 
-  dbObj.updateNote(id, note_title, note_body);
-  res.json(dbObj.getAllNotes());
+  dbObj.updateNote(note_id, note_title, note_body)
+  .then(val => {
+    let results = dbObj.getAllNotes;
+    results.then(data => {
+    res.json(data);
+    })
+    .catch(err => {
+      res.send(err);
+    }); 
+  });    
 });
 
 app.delete('/notes/:note_id', (req, res) => {
   // Find note in DB by id and delete it
   // Send back an OK/Fail message
   const id = req.params.note_id;
-  dbObj.deleteNote(id);
-  let results = dbObj.getAllNotes();
-  
-  res.json(results);
+  dbObj.deleteNote(id)
+  .then(() => {
+    let results = dbObj.getAllNotes();
+    results.then(data => {
+      res.json(data);
+    })
+      .catch(err => {
+        res.send(err);
+      })    
+  })
+    .catch(err => {
+      res.send(err);
+    });  
 });
 
 

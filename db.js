@@ -1,7 +1,8 @@
 let sqlite3 = require('sqlite3').verbose();
+const dbname = "Notes.db";
 
 const setupDB = () => {
-    const dbname = "Notes.db"
+    // const dbname = "Notes.db"
     let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
       if(err) {
           console.log(err.message);
@@ -36,38 +37,31 @@ const setupDB = () => {
   db.close();
 }
 
-let getAllNotes = () => {
-  const dbname = "Notes.db";
-  let resultSet;
+const getAllNotes = () => { 
+  return new Promise( (resolve, reject) => {
+   // const dbname = "Notes.db";  
 
-  let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READ, (err) => {
-    if (err) {
-      console.log(err.message);
-    }
-  });
-  
-  let sql = 'SELECT * from notes';
-
-  db.all(sql, [], (err, result) => {
-    if (err) {
-      console.log(err.message);
-      return null;
-    }
-    console.log("Result from inside getAllNotes():");
-    console.log(result);
-    let dataset = result; 
-    return dataset;
-    // console.log("dataset from inside getAllNotes():");
-    // console.log(dataset);
-   // dataset = resultSet;
-    // console.log("resultSet: ");
-    // console.log(resultSet);
-  });
- 
+    let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READ, (err) => {
+      if (err) {
+        reject(err.message);
+      }
+    });
+    
+    let sql = 'SELECT * from notes';
+    
+    db.all(sql, [], (err, result) => {
+      if(result) {
+        resolve(result);
+      }
+      else {
+        reject(err.message);
+      }  
+    }); 
+  }); 
 }
 
 const find = (id) => {
-  const dbname = "Notes.gb"
+ // const dbname = "Notes.gb"
   let resultSet;
 
   let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READ, (err) => {
@@ -90,53 +84,64 @@ const find = (id) => {
 }
 
 const insertNote = (id, title, body) => {
-  const dbname = "Notes.db";
-  let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READWRITE, (err) => {
-    if (err) {
-      console.log(err.message);
-    }
-  });
+  return new Promise((resolve, reject) => {
+    // const dbname = "Notes.db";
+      let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READWRITE, (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
 
-  db.run('INSERT INTO notes (?, ?, ?)', [id, title, body], (err) => {
-    if(err) {
-      console.log(err.message);
-    }
-  });
+      db.run('INSERT INTO notes (note_id, note_title, note_body) VALUES(?, ?, ?)', [id, title, body], (err) => {
+        if(err) {
+          reject(err);
+        }
+      });
 
-  db.close();
+      db.close();
+
+      resolve("Insertion successful");
+  });  
 }
 
 const updateNote = (id, title, body) => {
-  const dbname = "Notes.db";
-  let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READWRITE, (err) => {
-    if (err) {
-      console.log(err.message);
-    }
-  });
-  let sql = `UPDATE notes set note_title = ${title}, note_body = ${body} WHERE note_id = ${id}`;
-  db.run(sql, (err) => {
-    if (err) {
-      console.log(err.message);
-    }
-  });
-
-  db.close();
+  return new Promise((resolve, reject) => {
+   // const dbname = "Notes.db";
+    let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READWRITE, (err) => {
+      if (err) {
+        reject(err.message);
+      }    
+    });
+    let sql = `UPDATE notes set note_title = ${title}, note_body = ${body} WHERE note_id = ${id}`;
+    db.run(sql, (err) => {
+      if (err) {
+        reject(err.message);
+      }
+    });
+    db.close();
+    
+    resolve("Note updated successfully");
+  });  
 }
 
 const deleteNote = (noteid) => {
-  const dbname = "Notes.db";
-  let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READWRITE, (err) => {
+ // const dbname = "Notes.db";
+ return new Promise((resolve, reject) => {
+   let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
-      console.log(err.message);
+      reject(err.message);
     }
   });
   
   let sql = `DELETE FROM notes where note_id = ${noteid}`;
   db.run(sql, [], (err) => {
     if(err) {
-      console.log(err.message);
+      reject(err.message);
     }
   });
+
+  resolve("Note deleted successfully");
+ });  
 }
 
 const localize = (lang_id) => {
