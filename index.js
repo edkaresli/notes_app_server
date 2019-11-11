@@ -47,10 +47,10 @@ app.post('/notes', (req, res) => {
   let note_title = req.body.note_title;
   let note_body = req.body.note_body;
   
-  console.log(`Data: { note_id: ${note_id}, ${note_title}, note_body: ${note_body} }`);
+  console.log(`Data: { note_id: ${note_id}, note_title: ${note_title}, note_body: ${note_body} }`);
 
   dbObj.insertNote(note_id, note_title, note_body)
-  .then(() => {
+  .then( () => {
     let results = dbObj.getAllNotes();
     results.then(data => {
     res.json(data);
@@ -80,6 +80,7 @@ app.put('/notes/:note_id', (req, res) => {
 
   dbObj.updateNote(note_id, note_title, note_body)
   .then(val => {
+    console.log(val);
     let results = dbObj.getAllNotes();
     results.then(data => {
       res.json(data);
@@ -96,9 +97,11 @@ app.put('/notes/:note_id', (req, res) => {
 app.delete('/notes/:note_id', (req, res) => {
   // Find note in DB by id and delete it
   // Send back an OK/Fail message
+  console.log("Received a DELETE /notes/:note_id request");
   const id = req.params.note_id;
   dbObj.deleteNote(id)
-  .then(() => {
+  .then((val) => {
+    console.log(val);
     let results = dbObj.getAllNotes();
     results.then(data => {
       res.json(data);

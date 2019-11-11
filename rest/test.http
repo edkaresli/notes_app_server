@@ -2,8 +2,8 @@ POST http://localhost:5000/notes HTTP/1.1
 Content-Type: application/json
 
 {
-    "note_title": "Posting a new note",
-    "note_body": "Do the blah blah for the greater good!"
+    "note_title": "Frrrr!",
+    "note_body": "PI to power 4!"
 }
 
 ###
@@ -18,17 +18,27 @@ Content-Type: application/json
 
 ###
 
+POST http://localhost:5000/notes HTTP/1.1
+Content-Type: application/json
+
+{
+    "note_title": "Quack!",
+    "note_body": "The ducks are marching!"
+}
+
+###
+
 GET http://localhost:5000/notes HTTP/1.1
 Content-Type: application/json
 
 ###
 
-DELETE http://localhost:5000/notes/12345 HTTP/1.1
+DELETE http://localhost:5000/notes/12345678 HTTP/1.1
 Content-Type: application/json 
 
 ###
 
-PUT http://localhost:5000/notes/634634636 HTTP/1.1
+PUT http://localhost:5000/notes/12345678 HTTP/1.1
 Content-Type: application/json 
 
 {

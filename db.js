@@ -41,7 +41,7 @@ const getAllNotes = () => {
   return new Promise( (resolve, reject) => {
    // const dbname = "Notes.db";  
 
-    let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READ, (err) => {
+    let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READONLY, (err) => {
       if (err) {
         reject(err.message);
       }
@@ -57,6 +57,8 @@ const getAllNotes = () => {
         reject(err.message);
       }  
     }); 
+
+    db.close();
   }); 
 }
 
@@ -64,7 +66,7 @@ const find = (id) => {
  // const dbname = "Notes.gb"
   let resultSet;
 
-  let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READ, (err) => {
+  let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READONLY, (err) => {
     if (err) {
       console.log(err.message);
     }
@@ -86,14 +88,17 @@ const find = (id) => {
 const insertNote = (id, title, body) => {
   return new Promise((resolve, reject) => {
     // const dbname = "Notes.db";
+    db.serialize()
       let db = new sqlite3.Database('./DB/' + dbname, sqlite3.OPEN_READWRITE, (err) => {
         if (err) {
+          // db.close();
           reject(err);
         }
       });
-
-      db.run('INSERT INTO notes (note_id, note_title, note_body) VALUES(?, ?, ?)', [id, title, body], (err) => {
+      let sql = 'INSERT INTO notes (note_id, note_title, note_body) VALUES(?, ?, ?)'; 
+      db.run(sql, [id, title, body], (err) => {
         if(err) {
+          // db.close();
           reject(err);
         }
       });
@@ -115,12 +120,15 @@ const updateNote = (id, title, body) => {
     console.log(`Inside dbObj.updateNote()
        note_id: ${id}, note_title: ${title}, note_body: ${body}
     `);
-    let sql = `UPDATE notes SET note_title = ${title}, note_body = ${body} WHERE note_id = ${id};`;
-    db.run(sql, [], (err) => {
-      if (err) {
-        reject(err.message);
-      }
+    db.serialize(() => {
+      let sql = `UPDATE notes SET note_title = ${title}, note_body = ${body} WHERE note_id = ${id};`;
+      db.run(sql, [], (err) => {
+        if (err) {
+          reject(err.message);
+        }
+      });
     });
+    
     db.close();
     
     resolve("Note updated successfully");
@@ -136,12 +144,13 @@ const deleteNote = (noteid) => {
     }
   });
   
-  let sql = `DELETE FROM notes where note_id = ${noteid};`;
+  let sql = `DELETE FROM notes WHERE note_id = ${noteid};`;
   db.run(sql, [], (err) => {
     if(err) {
       reject(err.message);
     }
   });
+  db.close();
 
   resolve("Note deleted successfully");
  });  
