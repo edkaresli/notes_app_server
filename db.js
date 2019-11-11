@@ -47,7 +47,7 @@ const getAllNotes = () => {
       }
     });
     
-    let sql = 'SELECT * from notes';
+    let sql = 'SELECT * from notes;';
     
     db.all(sql, [], (err, result) => {
       if(result) {
@@ -112,8 +112,11 @@ const updateNote = (id, title, body) => {
         reject(err.message);
       }    
     });
-    let sql = `UPDATE notes set note_title = ${title}, note_body = ${body} WHERE note_id = ${id}`;
-    db.run(sql, (err) => {
+    console.log(`Inside dbObj.updateNote()
+       note_id: ${id}, note_title: ${title}, note_body: ${body}
+    `);
+    let sql = `UPDATE notes SET note_title = ${title}, note_body = ${body} WHERE note_id = ${id};`;
+    db.run(sql, [], (err) => {
       if (err) {
         reject(err.message);
       }
@@ -133,7 +136,7 @@ const deleteNote = (noteid) => {
     }
   });
   
-  let sql = `DELETE FROM notes where note_id = ${noteid}`;
+  let sql = `DELETE FROM notes where note_id = ${noteid};`;
   db.run(sql, [], (err) => {
     if(err) {
       reject(err.message);
@@ -149,7 +152,7 @@ const localize = (lang_id) => {
 }
 
 
-let dbOps = {
+let dbObj = {
   setupDB, 
   getAllNotes,
   deleteNote,
@@ -158,4 +161,4 @@ let dbOps = {
   updateNote
 };
 
-module.exports = dbOps;
+module.exports = dbObj;

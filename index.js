@@ -67,22 +67,30 @@ app.post('/notes', (req, res) => {
   // Send back and OK/Fail message
 });
 
-app.put('/notes/:id', (req, res) => {
+app.put('/notes/:note_id', (req, res) => {
   // Extract note from req and update DB with it using its ID and body
   // Send back an OK/Fail message
+  console.log("Receiving a PUT /notes/:note_id request");
+
   const note_id = req.params.note_id;
-  const note_title = req.params.note_title;
-  const note_body  = req.params.note_body; 
+  const note_title = req.body.note_title;
+  const note_body  = req.body.note_body; 
+
+  console.log(`Data: { note_id: ${note_id}, note_title: ${note_title}, note_body: ${note_body} }`);
+
   dbObj.updateNote(note_id, note_title, note_body)
   .then(val => {
-    let results = dbObj.getAllNotes;
+    let results = dbObj.getAllNotes();
     results.then(data => {
-    res.json(data);
+      res.json(data);
     })
     .catch(err => {
       res.send(err);
     }); 
-  });    
+  })
+    .catch(err => {
+      res.send(err);
+    })    
 });
 
 app.delete('/notes/:note_id', (req, res) => {
