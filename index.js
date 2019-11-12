@@ -14,8 +14,8 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 let dbObj = require('./db');
-
 dbObj.setupDB();
+
 // const router = require('./router');
 
 // app.use("/notes/", router);
@@ -49,8 +49,8 @@ app.post('/notes', (req, res) => {
   
   console.log(`Data: { note_id: ${note_id}, note_title: ${note_title}, note_body: ${note_body} }`);
 
-  dbObj.insertNote(note_id, note_title, note_body)
-  .then( () => {
+  let prom = dbObj.insertNote(note_id, note_title, note_body);
+  prom.then( () => {
     let results = dbObj.getAllNotes();
     results.then(data => {
     res.json(data);
@@ -119,3 +119,4 @@ app.delete('/notes/:note_id', (req, res) => {
 app.listen(PORT, '127.0.0.1', () => {
   console.log(`Server is listening on port ${PORT}...`);
 });
+
