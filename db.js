@@ -2,6 +2,34 @@ let sqlite3 = require('sqlite3').verbose();
 const dbname = "Notes.db";
 
 let db = null;
+let theDB = null;
+
+const prepareDB = (dbname) => {
+  return new sqlite3.Database(`./DB/${dbname}`, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE);  
+} 
+
+theDB = prepareDB(dbname);
+theDB.serialize(() => {
+  let sql = `CREATE TABLE IF NOT EXISTS notes (
+    note_id INTEGER PRIMARY KEY, 
+    note_title TEXT, 
+    note_body TEXT) WITHOUT ROWID;`;
+      
+  theDB.run(sql, [], (err) => {
+    if (err) {
+      throw "Error creating table notes";
+      // console.log(err.message);        
+    }      
+  });
+
+  // Create and then insert into the language table the text translations for the interface 
+  theDB.run("CREATE TABLE IF NOT EXISTS language (lang_id TEXT PRIMARY KEY, interface TEXT) WITHOUT ROWID;", [], (err) => {
+    if (err) {
+      throw "Error creating table language";
+      // console.log(err.message);
+    }
+  });  
+});
 
 const setupDB = () => {
   return new Promise((resolve, reject) => {
@@ -117,25 +145,24 @@ const insertNote = (id, title, body) => {
 }
 
 const updateNote = (id, title, body) => {
-  db = setupDB();
-  db.then(() => {
-    return new Promise((resolve, reject) => {
-      let sql = `UPDATE notes SET note_title = ?, note_body = ? WHERE note_id = ?`;
-      db.run(sql, [title, body, id], (err => {
-        if(err) {
+  return new Promise((resolve, reject) => {
+    db = setupDB();
+    db.then((val) => {
+      let sql = db.prepare(`UPDATE notes SET note_title = ?, note_body = ? WHERE note_id = ?`);
+      sql.run(sql, [title, body, id], (err => {
+        if (err) {
           reject(err.message);
         }
         else {
-          resolve("Note updated successfully!");
+          resolve("Note is updated successful");
         }
-      }));
-    });
-  }).then(val => {
-    console.log(val);
-  }).catch(err => {
-    console.error(err.message);
+      }))
+    })
+    .catch(err => {
+      console.log(err.message);
+    }) 
   })
-}
+}        
 
 const deleteNote = (noteid) => {
   setupDB()
@@ -181,6 +208,7 @@ const localize = (lang_id) => {
 
 
 let dbObj = { 
+  theDB,
   setupDB, 
   getAllNotes,
   deleteNote,

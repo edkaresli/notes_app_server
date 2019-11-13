@@ -14,7 +14,8 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 let dbObj = require('./db');
-dbObj.setupDB();
+let theDB = dbObj.theDB;
+// dbObj.setupDB();
 
 // const router = require('./router');
 
@@ -27,6 +28,14 @@ app.get('/', (req, res) => {
 
 app.get('/notes', (req, res) => {
   console.log("Received a GET /notes request");
+  theDB.all("SELECT * FROM notes", (err, results) => {
+    if (err) {
+      res.send(err.message);
+    }
+    console.log(results);
+    res.json(results);
+  })
+  /*
     // Connect to DB and get all notes, send them back as JSON
   let results = dbObj.getAllNotes();
   results.then(data => {
@@ -37,7 +46,7 @@ app.get('/notes', (req, res) => {
     console.log(err);
     res.send(err);
   });
-    
+    */
 });
 
 app.post('/notes', (req, res) => {
@@ -48,7 +57,28 @@ app.post('/notes', (req, res) => {
   let note_body = req.body.note_body;
   
   console.log(`Data: { note_id: ${note_id}, note_title: ${note_title}, note_body: ${note_body} }`);
+  
+  
+  theDB.run('INSERT INTO notes (note_id, note_title, note_body) VALUES(?, ?, ?)', [note_id, note_title, note_body], (err => {
+    if (err) {
+      console.log(err.message);
+      res.send(err.message);
+    }
+    else {
+      theDB.all('SELECT * FROM notes', [], (err, results) => {
+        if (err) {
+          console.log(err.message);
+          res.send(err.message);            
+        }
+        else {
+          res.json(results);
+        }
+      })
+    }
+  }))  
+  
 
+  /*
   let prom = dbObj.insertNote(note_id, note_title, note_body);
   prom.then( () => {
     let results = dbObj.getAllNotes();
@@ -62,7 +92,7 @@ app.post('/notes', (req, res) => {
     .catch(err => {
       res.send(err);
     });
-    
+    */
   // Extract note from req and insert it as a row into DB
   // Send back and OK/Fail message
 });
@@ -77,7 +107,26 @@ app.put('/notes/:note_id', (req, res) => {
   const note_body  = req.body.note_body; 
 
   console.log(`Data: { note_id: ${note_id}, note_title: ${note_title}, note_body: ${note_body} }`);
-
+  
+  let sql = 'UPDATE notes SET note_title = ?, note_body = ? WHERE note_id = ?';
+  theDB.run(sql, [note_title, note_body, note_id], (err => {
+    if (err) {
+      console.log(err.message);
+      res.send(err.message);
+    }
+    else {
+      theDB.all('SELECT * FROM notes', [], (err, results) => {
+        if(err) {
+          console.log(err.message);
+          res.send(err.message);          
+        }
+        else {
+          res.json(results);
+        }
+      })
+    }
+  }))
+/*
   dbObj.updateNote(note_id, note_title, note_body)
   .then(val => {
     console.log(val);
@@ -92,6 +141,7 @@ app.put('/notes/:note_id', (req, res) => {
     .catch(err => {
       res.send(err);
     })    
+    */
 });
 
 app.delete('/notes/:note_id', (req, res) => {
@@ -99,6 +149,25 @@ app.delete('/notes/:note_id', (req, res) => {
   // Send back an OK/Fail message
   console.log("Received a DELETE /notes/:note_id request");
   const id = req.params.note_id;
+  let sql = 'DELETE FROM notes WHERE note_id = ?';
+  theDB.run(sql, [id], (err) => {
+    if (err) {
+      console.log(err.message);
+      res.send(err.message);
+    }
+    else {
+      theDB.all('SELECT * FROM notes', [], (err, results) => {
+        if (err) {
+          console.log(err.message);
+          res.send(err.message);
+        }
+        else {
+          res.json(results);
+        }
+      })
+    }
+  })
+  /*
   dbObj.deleteNote(id)
   .then((val) => {
     console.log(val);
@@ -113,6 +182,7 @@ app.delete('/notes/:note_id', (req, res) => {
     .catch(err => {
       res.send(err);
     });  
+    */
 });
 
 
