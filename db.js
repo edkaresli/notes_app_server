@@ -29,6 +29,19 @@ theDB.serialize(() => {
       // console.log(err.message);
     }
   });  
+  
+  let statement = theDB.prepare("INSERT INTO language (lang_id, interface) VALUES(?, ?)");
+  let interfaceEN = `{ 
+    "del": "Delete",
+    "edit": "Edit" 
+  }`;
+  let interfaceCZ = `{ 
+    "del": "Smazat",
+    "edit": "Opravit" 
+  }`;
+  statement.run(['EN', interfaceEN]);
+  statement.run('CZ', interfaceCZ);
+  statement.finalize();
 });
 
 const setupDB = () => {
