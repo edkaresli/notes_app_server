@@ -3,7 +3,7 @@ const dbname = "Notes.db";
 
 let db = null;
 let theDB = null;
-
+ 
 const prepareDB = (dbname) => {
   return new sqlite3.Database(`./DB/${dbname}`, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE);  
 } 
@@ -22,14 +22,16 @@ theDB.serialize(() => {
     }      
   });
 
+  
   // Create and then insert into the language table the text translations for the interface 
-  theDB.run("CREATE TABLE IF NOT EXISTS language (lang_id TEXT PRIMARY KEY, interface TEXT) WITHOUT ROWID;", [], (err) => {
+  theDB.run("CREATE TABLE IF NOT EXISTS language (lang_id VARCHAR PRIMARY KEY, interface TEXT) WITHOUT ROWID;", [], (err) => {
     if (err) {
       throw "Error creating table language";
       // console.log(err.message);
     }
   });  
   
+
   let statement = theDB.prepare("INSERT INTO language (lang_id, interface) VALUES(?, ?)");
   let interfaceEN = `{ 
     "del": "Delete",
@@ -39,7 +41,7 @@ theDB.serialize(() => {
     "del": "Smazat",
     "edit": "Opravit" 
   }`;
-  statement.run(['EN', interfaceEN]);
+  statement.run('EN', interfaceEN);
   statement.run('CZ', interfaceCZ);
   statement.finalize();
 });

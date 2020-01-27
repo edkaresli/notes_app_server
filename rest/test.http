@@ -38,10 +38,15 @@ Content-Type: application/json
 
 ###
 
-PUT http://localhost:5000/notes/634634636 HTTP/1.1
+PUT http://localhost:5000/notes/1577289518170 HTTP/1.1
 Content-Type: application/json 
 
 {
     "note_title": "Starship Damascus",
     "note_body": "Flying to the farthest stars"
 }
+
+### 
+
+GET http://localhost:5000/notes/1580079285843 HTTP/1.1
+Content-Type: application/json

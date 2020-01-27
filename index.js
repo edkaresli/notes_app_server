@@ -76,7 +76,29 @@ app.post('/notes', (req, res) => {
       })
     }
   }))  
-  
+   
+  // TODO:
+  app.get('/notes/:note_id', (req, res) => {
+    const note_id = req.params.note_id;
+    let sql = 'SELECT note_title, note_body FROM notes WHERE note_id = ?';
+    theDB.run(sql, [note_id], (err => {
+      if (err) {
+        console.log(err.message);
+        res.send(err.message);
+      }
+      else {
+        theDB.all(sql, [note_id], (err, results) => {
+          if(err) {
+            console.log(err.message);
+            res.send(err.message);          
+          }
+          else {
+            res.json(results);
+          }
+        })
+      }
+    }))
+  });
 
   /*
   let prom = dbObj.insertNote(note_id, note_title, note_body);

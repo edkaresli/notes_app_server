@@ -21,7 +21,7 @@
     "express": "^4.17.1",
     "sqlite3": "^4.1.0"
   },
-  "devDependencies": {
+  "devDependencies": {    
     "nodemon": "^1.19.4"
   }
 }
