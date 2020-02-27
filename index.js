@@ -1,5 +1,5 @@
 const express = require("express");
-
+const cors = require('cors');
 const app = express();
 const bodyParser = require("body-parser");
 
@@ -12,6 +12,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(express.static('public'));
+
+app.use(cors());
 
 let dbObj = require('./db');
 let theDB = dbObj.theDB;
@@ -52,7 +54,7 @@ app.get('/notes', (req, res) => {
 app.post('/notes', (req, res) => {
   console.log("Received a POST /notes request.");
   
-  let note_id = Date.now();
+  let note_id = req.body.note_id; // Date.now();
   let note_title = req.body.note_title;
   let note_body = req.body.note_body;
   

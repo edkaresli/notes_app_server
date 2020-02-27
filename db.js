@@ -1,7 +1,7 @@
 let sqlite3 = require('sqlite3').verbose();
 const dbname = "Notes.db";
 
-let db = null;
+// let db = null;
 let theDB = null;
  
 const prepareDB = (dbname) => {
@@ -10,21 +10,27 @@ const prepareDB = (dbname) => {
 
 theDB = prepareDB(dbname);
 theDB.serialize(() => {
-  let sql = `CREATE TABLE IF NOT EXISTS notes (
+  let sql_notes = `CREATE TABLE IF NOT EXISTS notes (
     note_id INTEGER PRIMARY KEY, 
     note_title TEXT, 
     note_body TEXT) WITHOUT ROWID;`;
       
-  theDB.run(sql, [], (err) => {
+  theDB.run(sql_notes, [], (err) => {
     if (err) {
       throw "Error creating table notes";
       // console.log(err.message);        
     }      
   });
 
+  theDB.run("DROP TABLE language", [], (err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
   
   // Create and then insert into the language table the text translations for the interface 
-  theDB.run("CREATE TABLE IF NOT EXISTS language (lang_id VARCHAR PRIMARY KEY, interface TEXT) WITHOUT ROWID;", [], (err) => {
+  let sql_lang = `CREATE TABLE IF NOT EXISTS language (lang_id VARCHAR PRIMARY KEY, interface TEXT) WITHOUT ROWID;`
+  theDB.run(sql_lang, [], (err) => {
     if (err) {
       throw "Error creating table language";
       // console.log(err.message);
@@ -45,6 +51,8 @@ theDB.serialize(() => {
   statement.run('CZ', interfaceCZ);
   statement.finalize();
 });
+
+/*
 
 const setupDB = () => {
   return new Promise((resolve, reject) => {
@@ -217,20 +225,23 @@ const restartDB = () => {
   })   
 }
 
+*/
+
 const localize = (lang_id) => {
   // Get the localization JSON object from the language table by the lang_id
 }
 
 
 let dbObj = { 
-  theDB,
+  theDB
+  /*,
   setupDB, 
   getAllNotes,
   deleteNote,
   find, 
   insertNote, 
   updateNote,
-  restartDB
+  restartDB */
 };
 
 module.exports = dbObj;
