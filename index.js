@@ -17,11 +17,6 @@ app.use(cors());
 
 let dbObj = require('./db');
 let theDB = dbObj.theDB;
-// dbObj.setupDB();
-
-// const router = require('./router');
-
-// app.use("/notes/", router);
 
 app.get('/', (req, res) => {
   console.log("Received a GET request");
@@ -37,24 +32,13 @@ app.get('/notes', (req, res) => {
     console.log(results);
     res.json(results);
   })
-  /*
-    // Connect to DB and get all notes, send them back as JSON
-  let results = dbObj.getAllNotes();
-  results.then(data => {
-    console.log(data);
-    res.json(data);
-  })
-  .catch(err => {
-    console.log(err);
-    res.send(err);
-  });
-    */
+  
 });
 
 app.post('/notes', (req, res) => {
   console.log("Received a POST /notes request.");
   
-  let note_id = req.body.note_id; // Date.now();
+  let note_id = req.body.note_id; 
   let note_title = req.body.note_title;
   let note_body = req.body.note_body;
   
@@ -101,24 +85,7 @@ app.post('/notes', (req, res) => {
       }
     }))
   });
-
-  /*
-  let prom = dbObj.insertNote(note_id, note_title, note_body);
-  prom.then( () => {
-    let results = dbObj.getAllNotes();
-    results.then(data => {
-    res.json(data);
-  })
-    .catch(err => {
-      res.send(err);
-    });
-  })
-    .catch(err => {
-      res.send(err);
-    });
-    */
-  // Extract note from req and insert it as a row into DB
-  // Send back and OK/Fail message
+  
 });
 
 app.put('/notes/:note_id', (req, res) => {
@@ -150,22 +117,7 @@ app.put('/notes/:note_id', (req, res) => {
       })
     }
   }))
-/*
-  dbObj.updateNote(note_id, note_title, note_body)
-  .then(val => {
-    console.log(val);
-    let results = dbObj.getAllNotes();
-    results.then(data => {
-      res.json(data);
-    })
-    .catch(err => {
-      res.send(err);
-    }); 
-  })
-    .catch(err => {
-      res.send(err);
-    })    
-    */
+
 });
 
 app.delete('/notes/:note_id', (req, res) => {
@@ -191,22 +143,7 @@ app.delete('/notes/:note_id', (req, res) => {
       })
     }
   })
-  /*
-  dbObj.deleteNote(id)
-  .then((val) => {
-    console.log(val);
-    let results = dbObj.getAllNotes();
-    results.then(data => {
-      res.json(data);
-    })
-      .catch(err => {
-        res.send(err);
-      })    
-  })
-    .catch(err => {
-      res.send(err);
-    });  
-    */
+  
 });
 
 
